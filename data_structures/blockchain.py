@@ -52,7 +52,7 @@ def add_block(self, block):
         and appending to the blockfile.
         :param block: A 74 Byte string representing a block
         """
-        size = get_size_bytes(self, block)
+        size = get_size_bytes(block)
         payload = magic_bytes+size+block
         
         with open(self.blockfile, 'ab') as fileobj:
