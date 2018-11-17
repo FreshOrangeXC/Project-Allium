@@ -1,5 +1,8 @@
 import os.path
 from struct import pack
+
+magic_bytes = pack('L', 3652501241)
+
 class Blockchain:
     
     def __init__(self,filename):
