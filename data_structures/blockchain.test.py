@@ -2,17 +2,17 @@
 import unittest
 import os
 from blockchain import *
-from block import *
+from block import mine
 
 class TestBlock(unittest.TestCase):
 	def setUp(self):
-		self.bc = Blockchain("testfile")
+		self.bc = Blockchain("testfile.db")
 
 	def tearDown(self):
-		os.remove("testfile")
+		os.remove("testfile.db")
 
 	def test_constructor(self):
-		filename = "testfile"
+		filename = "testfile.db"
 		self.assertEqual(self.bc.blockfile,filename)
 		self.assertTrue(os.path.isfile(filename))
 		# Opens the blockchain file and writes '0' to it
@@ -55,6 +55,43 @@ class TestBlock(unittest.TestCase):
 		# Attempts to extract bytes_3 from written file
 		actual = extract(self.bc.blockfile, index, num_bytes)
 		# Tests manually written bytestring, and extracted bytestring
+		self.assertEqual(expected, actual)
+
+	def test_add_block1(self):
+			target = 10**72     
+			data = hash_SHA("Testing block".encode())   
+			prev_hash = hash_SHA("0123456789ABCDEF".encode())
+			
+			#Create a block using .mine()
+			expected = mine(prev_hash, data, target)
+			#Get size of block
+			size = get_size_bytes(expected)
+			# Add block to blockchain
+			self.bc.add_block(expected)
+			# Extracts block from blockchain
+			actual = extract(self.bc.blockfile, 0, size)
+			# Confirms that extracted block is identical to actual block
+			self.assertEqual(expected, actual)
+		
+	def test_add_block2(self):
+		target = 10**72     
+		
+		# Creates 4 blocks and add to file
+		b1 = mine(hash_SHA("Root.encode"()), "Block1".encode(), target)
+		self.bc.add_block(b1)
+		b2 = mine(hash_SHA"Block1".encode()), "Block2".encode(), target)
+		self.bc.add_block(b2)
+		b3 = mine(hash_SHA"Block2".encode()), "Block3".encode(), target)
+		self.bc.add_block(b3)
+		b4 = mine(hash_SHA"Block3".encode()), "Block4".encode(), target)
+		self.bc.add_block(b4)
+		# Expected value should be concatonation of all blocks
+		expected = b1 + b2 + b3 + b4
+		#Get size of block
+		size = get_size_bytes(expected)
+		# Extracts blocks from blockchain
+		actual = extract(self.bc.blockfile, 0, size)
+		# Confirms that extracted blocks is identical to actual blocks
 		self.assertEqual(expected, actual)
 
 if __name__ == '__main__':

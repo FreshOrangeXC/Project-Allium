@@ -42,3 +42,15 @@ def extract(filename, index, num_bytes, offset=0):
       file.seek(index, offset)
       # Reads num_bytes after file pointer
       return file.read(num_bytes)
+    
+def add_block(self, block):
+        """
+        Adds a block to the blockfile by concatonating the magic_bytes, block size, and block byte string
+        and appending to the blockfile.
+        :param block: A 74 Byte string representing a block
+        """
+        size = get_size_bytes(self, block)
+        payload = magic_bytes+size+block
+        
+        with open(self.blockfile, 'ab') as fileobj:
+            fileobj.write(payload)
